@@ -1,13 +1,22 @@
-  threshold = 128;
-  DEBUG = true;
+threshold = 128;
+DEBUG = false;
 
-  var video = document.createElement('video');
-  video.width = 640;
-  video.height = 480;
-  video.loop = true;
-  video.volume = 0;
-  video.autoplay = true;
-  video.controls = true;
+var video = document.createElement('video');
+video.width = 640;
+video.height = 480;
+video.loop = true;
+video.volume = 0;
+video.autoplay = true;
+video.controls = true;
+  
+var glCanvas;
+var camera;
+var characterPlane;
+var m;
+var scene;
+//Test
+var sceneTest;
+var cameraTest;
 
 var getUserMedia = function(t, onsuccess, onerror) {
   if (navigator.getUserMedia) {
@@ -38,20 +47,33 @@ getUserMedia({'video': true},
     alert("Couldn't access webcam.");
   }
 );
-
+//----------------------------------------------------------------
+function createMarker(size, color){
+	var material = new THREE.MeshBasicMaterial({ color: color });
+	var radius = size;
+	var segments = 16;
+	var circleGeometry = new THREE.CircleGeometry( radius, segments );
+	var marker = new THREE.Mesh( circleGeometry, material );
+	marker.doubleSided = true;
+	return marker;
+}
+//----------------------------------------------------------------
 function init() {
     document.body.appendChild(video);
+	video.style.display = 'none';
 
     var canvas = document.createElement('canvas');
     canvas.width = 320;
     canvas.height = 240;
     document.body.appendChild(canvas);
+	canvas.style.display = 'none';
 
     var debugCanvas = document.createElement('canvas');
     debugCanvas.id = 'debugCanvas';
     debugCanvas.width = 320;
     debugCanvas.height = 240;
     document.body.appendChild(debugCanvas);
+	debugCanvas.style.display = 'none';
 
     var videoCanvas = document.createElement('canvas');
     videoCanvas.width = video.width;
@@ -74,22 +96,28 @@ function init() {
     var tmp = new Float32Array(16);
 
     var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(960, 720);
+    renderer.setSize(640, 480);
 
-    var glCanvas = renderer.domElement;
+    glCanvas = renderer.domElement;
+	glCanvas.style.position = "static";
     var s = glCanvas.style;
     document.body.appendChild(glCanvas);
+	// OnMouseDown
+	glCanvas.addEventListener( 'mousedown', onDocumentMouseDown, false );
 
-    var scene = new THREE.Scene();
+    scene = new THREE.Scene();
     var light = new THREE.PointLight(0xffffff);
     light.position.set(400, 500, 100);
     scene.add(light);
     var light = new THREE.PointLight(0xffffff);
     light.position.set(-400, -500, -100);
     scene.add(light);
+	
+	//add origin marker
+    //scene.add(createMarker(25,0x0000ff));
 
     // Create a camera and a marker root object for your Three.js scene.
-    var camera = new THREE.Camera();
+    camera = new THREE.Camera();
     scene.add(camera);
     
     // Next we need to make the Three.js camera use the FLARParam matrix.
@@ -113,6 +141,18 @@ function init() {
     var times = [];
     var markers = {};
     var lastTime = 0;
+	
+	// ------------------------------------------------
+	// Test scene
+	/*
+	var cube = new THREE.Mesh(
+			new THREE.BoxGeometry( 1, 1, 1 ),
+			new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
+			);
+	cube.position.z = 50;
+	scene.add(cube);
+	*/
+	// ------------------------------------------------
 
     setInterval(function(){
       if (video.ended) video.play();
@@ -159,26 +199,49 @@ function init() {
         r.age++;
       }
       for (var i in markers) {
-        var m = markers[i];
+        m = markers[i];
         if (!m.model) {
 			m.model = new THREE.Object3D();
-			/*
-			var cube = new THREE.Mesh(
-				new THREE.CubeGeometry(100,100,100),
-				new THREE.MeshLambertMaterial({color: 0|(0xffffff*Math.random())})
-			);
-			cube.position.z = -50;
-			cube.doubleSided = true;
 			m.model.matrixAutoUpdate = false;
-			m.model.add(cube);
-			*/
+			
+			var testCube = new THREE.Mesh(
+				new THREE.BoxGeometry( 20, 20, 20 ),
+				new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
+			);
+			testCube.position.z = -10;
+			testCube.position.x = 100;
+			m.model.add(testCube);
+			
+			var material = new THREE.MeshBasicMaterial({
+				map: THREE.ImageUtils.loadTexture('./g1.png'),
+				transparent: true,
+				side: THREE.DoubleSide
+			});
+			
+			var characterPlaneTest = new THREE.Mesh(
+				new THREE.PlaneGeometry(87.5, 200), material
+				//new THREE.MeshBasicMaterial({color:0x00ffff, side: THREE.DoubleSide})
+			);
+			characterPlaneTest.position.z = -100;
+			characterPlaneTest.rotation.y = -Math.PI/2;
+			characterPlaneTest.rotation.x = -Math.PI/2;
+			m.model.add(characterPlaneTest);
+			
+			
+			
+			scene.add(m.model);
+		
+			
+			//var marker = createMarker(25,0xffff00);
+			//m.model.add(marker);
 			
 			// material
+			/*
 			var material = new THREE.MeshBasicMaterial({
 				map: THREE.ImageUtils.loadTexture('./g1.png'),
 				transparent: true
 			});
-			var characterPlane = new THREE.Mesh(
+			characterPlane = new THREE.Mesh(
 				new THREE.PlaneGeometry(87.5, 200), material
 				//new THREE.PlaneBufferGeometry(43.75, 100),
 				//new THREE.CubeGeometry(100,100,100),
@@ -188,10 +251,11 @@ function init() {
 			characterPlane.rotation.y = -Math.PI/2;
 			characterPlane.rotation.x = -Math.PI/2;
 			characterPlane.doubleSided = true;
-			m.model.matrixAutoUpdate = false;
+			m.model.matrixAutoUpdate = false; // false
 			m.model.add(characterPlane);
 		  
 			scene.add(m.model);
+			*/
         }
         copyMatrix(m.transform, tmp);
         m.model.matrix.setFromArray(tmp);
@@ -230,4 +294,30 @@ function copyMatrix(mat, cm) {
     cm[13] = -mat.m13;
     cm[14] = mat.m23;
     cm[15] = 1;
+}
+
+
+
+function onDocumentMouseDown( event ){
+
+	var mouse = { x: 0, y: 0 }
+	var vector = new THREE.Vector3();
+	var raycaster = new THREE.Raycaster();
+	//raycaster.precision=0.01;
+	mouse.x = ( (event.clientX - glCanvas.offsetLeft) / 640 ) * 2 - 1;
+    mouse.y = - ( (event.clientY - glCanvas.offsetTop) / 480 ) * 2 + 1;
+
+	console.log(mouse.x+ " x "+ mouse.y);
+	
+    vector.set( mouse.x, mouse.y, -0.5 );
+    vector.unproject( camera );
+	vector.sub( camera.position ).normalize();
+
+    raycaster.set( camera.position,  vector);
+
+    var intersects = raycaster.intersectObjects( scene.children, true );
+
+    if ( intersects.length > 0 ) {
+        alert("ok");
+    }
 }
