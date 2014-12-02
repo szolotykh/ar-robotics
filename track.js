@@ -17,6 +17,7 @@ var scene;
 //Test
 var sceneTest;
 var cameraTest;
+var mainAvatarSpace;
 
 var getUserMedia = function(t, onsuccess, onerror) {
   if (navigator.getUserMedia) {
@@ -59,6 +60,9 @@ function createMarker(size, color){
 }
 //----------------------------------------------------------------
 function init() {
+
+	mainAvatarSpace = new AvatarSpace()
+
     document.body.appendChild(video);
 	video.style.display = 'none';
 
@@ -186,68 +190,24 @@ function init() {
 			}
 			r.age++;
 		}
-      for (var i in markers) {
-        m = markers[i];
-        if (!m.model) {
-			m.model = new THREE.Object3D();
-			m.model.matrixAutoUpdate = false;
-			
-			var testCube = new THREE.Mesh(
-				new THREE.BoxGeometry( 20, 20, 20 ),
-				new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
-			);
-			testCube.position.z = -10;
-			testCube.position.x = 100;
-			m.model.add(testCube);
-			
-			var material = new THREE.MeshBasicMaterial({
-				map: THREE.ImageUtils.loadTexture('./g1.png'),
-				transparent: true,
-				side: THREE.DoubleSide
-			});
-			
-			var characterPlaneTest = new THREE.Mesh(
-				new THREE.PlaneGeometry(87.5, 200), material
-				//new THREE.MeshBasicMaterial({color:0x00ffff, side: THREE.DoubleSide})
-			);
-			characterPlaneTest.position.z = -100;
-			characterPlaneTest.rotation.y = -Math.PI/2;
-			characterPlaneTest.rotation.x = -Math.PI/2;
-			m.model.add(characterPlaneTest);
-			
-			
-			// Add description callous
-			var cCallout = createCanvasDescriptionCallout("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.", 200);
-			var tCallout = new THREE.Texture(cCallout);
-			tCallout.needsUpdate = true;
-	
-			var characterDialogPlane = new THREE.Mesh(
-				new THREE.PlaneGeometry(cCallout.width/2, cCallout.height/2),
-				new THREE.MeshBasicMaterial({
-					map: tCallout,
-					transparent: true,
-					side: THREE.DoubleSide})
-			);
-			characterDialogPlane.position.x = 5;
-			characterDialogPlane.position.y = 90;
-			characterDialogPlane.position.z = -150;
-			characterDialogPlane.rotation.y = -Math.PI/2;
-			characterDialogPlane.rotation.x = -Math.PI/2;
-			m.model.add(characterDialogPlane);
-			
-			
-			scene.add(m.model);
-        }
-        copyMatrix(m.transform, tmp);
-        m.model.matrix.setFromArray(tmp);
-        m.model.matrixWorldNeedsUpdate = true;
-      }
-      renderer.autoClear = false;
-      renderer.clear();
-      renderer.render(videoScene, videoCam);
-      renderer.render(scene, camera);
+		for (var i in markers) {
+			m = markers[i];
+			if (!m.model) {
+				//Create Model
+				m.model = mainAvatarSpace.createModel();
+				m.model.matrixAutoUpdate = false;
+				scene.add(m.model);
+			}
+			copyMatrix(m.transform, tmp);
+			m.model.matrix.setFromArray(tmp);
+			m.model.matrixWorldNeedsUpdate = true;
+		}
+		renderer.autoClear = false;
+		renderer.clear();
+		renderer.render(videoScene, videoCam);
+		renderer.render(scene, camera);
     }, 15);
-  }
+}
 
 THREE.Matrix4.prototype.setFromArray = function(m) {
     return this.set(
