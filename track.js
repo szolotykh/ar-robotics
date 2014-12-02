@@ -141,63 +141,51 @@ function init() {
     var times = [];
     var markers = {};
     var lastTime = 0;
-	
-	// ------------------------------------------------
-	// Test scene
-	/*
-	var cube = new THREE.Mesh(
-			new THREE.BoxGeometry( 1, 1, 1 ),
-			new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
-			);
-	cube.position.z = 50;
-	scene.add(cube);
-	*/
-	// ------------------------------------------------
 
     setInterval(function(){
-      if (video.ended) video.play();
-      if (video.paused) return;
-      if (window.paused) return;
-      if (video.currentTime == video.duration) {
-        video.currentTime = 0;
-      }
-      if (video.currentTime == lastTime) return;
-      lastTime = video.currentTime;
-      videoCanvas.getContext('2d').drawImage(video,0,0);
-      ctx.drawImage(videoCanvas, 0,0,320,240);
-      var dt = new Date().getTime();
+		if (video.ended) video.play();
+		if (video.paused) return;
+		if (window.paused) return;
+		if (video.currentTime == video.duration) {
+			video.currentTime = 0;
+		}
+		if (video.currentTime == lastTime) return;
+		lastTime = video.currentTime;
+		videoCanvas.getContext('2d').drawImage(video,0,0);
+		ctx.drawImage(videoCanvas, 0,0,320,240);
+		var dt = new Date().getTime();
 
-      canvas.changed = true;
-      videoTex.needsUpdate = true;
+		canvas.changed = true;
+		videoTex.needsUpdate = true;
 
-      var t = new Date();
-      var detected = detector.detectMarkerLite(raster, threshold);
-      for (var idx = 0; idx<detected; idx++) {
-        var id = detector.getIdMarkerData(idx);
-        var currId;
-        if (id.packetLength > 4) {
-          currId = -1;
-        }else{
-          currId=0;
-          for (var i = 0; i < id.packetLength; i++ ) {
-            currId = (currId << 8) | id.getPacketData(i);
-          }
-        }
-        if (!markers[currId]) {
-          markers[currId] = {};
-        }
-        detector.getTransformMatrix(idx, resultMat);
-        markers[currId].age = 0;
-        markers[currId].transform = Object.asCopy(resultMat);
-      }
-      for (var i in markers) {
-        var r = markers[i];
-        if (r.age > 1) {
-          delete markers[i];
-          scene.remove(r.model);
-        }
-        r.age++;
-      }
+		var t = new Date();
+		var detected = detector.detectMarkerLite(raster, threshold);
+		for (var idx = 0; idx<detected; idx++) {
+			var id = detector.getIdMarkerData(idx);
+			var currId;
+			if (id.packetLength > 4) {
+				currId = -1;
+			}else{
+				currId=0;
+				for (var i = 0; i < id.packetLength; i++ ) {
+					currId = (currId << 8) | id.getPacketData(i);
+				}
+			}
+			if (!markers[currId]) {
+				markers[currId] = {};
+			}
+			detector.getTransformMatrix(idx, resultMat);
+			markers[currId].age = 0;
+			markers[currId].transform = Object.asCopy(resultMat);
+		}
+		for (var i in markers) {
+			var r = markers[i];
+			if (r.age > 1) {
+				delete markers[i];
+				scene.remove(r.model);
+			}
+			r.age++;
+		}
       for (var i in markers) {
         m = markers[i];
         if (!m.model) {
@@ -228,34 +216,27 @@ function init() {
 			m.model.add(characterPlaneTest);
 			
 			
-			
-			scene.add(m.model);
-		
-			
-			//var marker = createMarker(25,0xffff00);
-			//m.model.add(marker);
-			
-			// material
-			/*
-			var material = new THREE.MeshBasicMaterial({
-				map: THREE.ImageUtils.loadTexture('./g1.png'),
-				transparent: true
-			});
-			characterPlane = new THREE.Mesh(
-				new THREE.PlaneGeometry(87.5, 200), material
-				//new THREE.PlaneBufferGeometry(43.75, 100),
-				//new THREE.CubeGeometry(100,100,100),
-				//new THREE.MeshBasicMaterial({color:0x00ffff})
+			// Add description callous
+			var cCallout = createCanvasDescriptionCallout("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.", 200);
+			var tCallout = new THREE.Texture(cCallout);
+			tCallout.needsUpdate = true;
+	
+			var characterDialogPlane = new THREE.Mesh(
+				new THREE.PlaneGeometry(cCallout.width/2, cCallout.height/2),
+				new THREE.MeshBasicMaterial({
+					map: tCallout,
+					transparent: true,
+					side: THREE.DoubleSide})
 			);
-			characterPlane.position.z = -100;
-			characterPlane.rotation.y = -Math.PI/2;
-			characterPlane.rotation.x = -Math.PI/2;
-			characterPlane.doubleSided = true;
-			m.model.matrixAutoUpdate = false; // false
-			m.model.add(characterPlane);
-		  
+			characterDialogPlane.position.x = 5;
+			characterDialogPlane.position.y = 90;
+			characterDialogPlane.position.z = -150;
+			characterDialogPlane.rotation.y = -Math.PI/2;
+			characterDialogPlane.rotation.x = -Math.PI/2;
+			m.model.add(characterDialogPlane);
+			
+			
 			scene.add(m.model);
-			*/
         }
         copyMatrix(m.transform, tmp);
         m.model.matrix.setFromArray(tmp);
