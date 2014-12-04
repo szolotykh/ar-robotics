@@ -1,4 +1,45 @@
+function Avatar(){
+	this.model = new THREE.Mesh(
+		new THREE.PlaneGeometry(87.5, 200),
+		new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture('./g1.png'),
+			transparent: true,
+			side: THREE.DoubleSide
+		})
+	);
+	this.model.position.set(0, 0 , -100);
+	this.model.rotation.set(-Math.PI/2, -Math.PI/2, 0);
+	
+	this.setDialog = function(text){
+	// Add description callous
+		if(this.dialog){
+			this.dialog.geometry.dispose();
+			this.dialog.material.dispose();
+			this.model.remove(this.dialog);
+			this.dialog = undefined;
+		}
+		
+		var cCallout = createCanvasDescriptionCallout(text, 200);
+		var tCallout = new THREE.Texture(cCallout);
+		tCallout.needsUpdate = true;
+	
+		this.dialog = new THREE.Mesh(
+			new THREE.PlaneGeometry(cCallout.width/2, cCallout.height/2),
+			new THREE.MeshBasicMaterial({
+				map: tCallout,
+				transparent: true,
+				side: THREE.DoubleSide})
+		);
+		this.dialog.position.set(100, 60, -10);
+		this.model.add(this.dialog);
+	}
+}
+
 function AvatarSpace(){
+
+	this.avatar = new Avatar();
+	this.avatar.setDialog("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.");
+	//this.avatar.setDialog("Hello!");
 
 	this.createMarker = function(size, color){
 		var material = new THREE.MeshBasicMaterial({ color: color });
@@ -10,62 +51,27 @@ function AvatarSpace(){
 		return marker;
 	}
 
-
-	this.createModel = function(){
-		var model = new THREE.Object3D();
-		
-		var testCube = new THREE.Mesh(new THREE.CubeGeometry(50, 50, 50), new THREE.MeshLambertMaterial({
+	this.model = new THREE.Object3D();
+	this.model.matrixAutoUpdate = false;
+	// Test cube
+	this.testCube = new THREE.Mesh(
+		new THREE.CubeGeometry(50, 50, 50),
+		new THREE.MeshLambertMaterial({
 			color: 'blue',
 			side: THREE.DoubleSide 
-		}));
-		testCube.overdraw = true;
+		})
+	);
+	this.testCube.overdraw = true;
+	this.testCube.position.set(100, -200, -10);
+	this.model.add(this.testCube);
+		
+	this.directionalLight = new THREE.DirectionalLight(0xffffff);
+	this.model.add(this.directionalLight);
 
-		
-		testCube.position.z = -10;
-		testCube.position.x = 100;
-		testCube.position.y = -200;
-		
-		model.add(testCube);
-		
-		var directionalLight = new THREE.DirectionalLight(0xffffff);
-		model.add(directionalLight);
-
-		var characterPlaneTest = new THREE.Mesh(
-			new THREE.PlaneGeometry(87.5, 200),
-			new THREE.MeshBasicMaterial({
-				map: THREE.ImageUtils.loadTexture('./g1.png'),
-				transparent: true,
-				side: THREE.DoubleSide
-			})
-		);
-		characterPlaneTest.position.z = -100;
-		characterPlaneTest.rotation.y = -Math.PI/2;
-		characterPlaneTest.rotation.x = -Math.PI/2;
-		model.add(characterPlaneTest);	
-			
-		// Add description callous
-		var cCallout = createCanvasDescriptionCallout("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.", 200);
-		var tCallout = new THREE.Texture(cCallout);
-		tCallout.needsUpdate = true;
+	// Add avatar model to AvatarSpace
+	this.model.add(this.avatar.model);	
 	
-		var characterDialogPlane = new THREE.Mesh(
-			new THREE.PlaneGeometry(cCallout.width/2, cCallout.height/2),
-			new THREE.MeshBasicMaterial({
-				map: tCallout,
-				transparent: true,
-				side: THREE.DoubleSide})
-		);
-		characterDialogPlane.position.x = 5;
-		characterDialogPlane.position.y = 90;
-		characterDialogPlane.position.z = -150;
-		characterDialogPlane.rotation.y = -Math.PI/2;
-		characterDialogPlane.rotation.x = -Math.PI/2;
-		model.add(characterDialogPlane);
-		
-		model.add( legoBlock );
-		
-		return model;
-	}
+	//model.add( legoBlock );
 	
 	this.info = function(){
 		console.log("AvatarSpace");

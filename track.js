@@ -17,7 +17,7 @@ var scene;
 //Test
 var sceneTest;
 var cameraTest;
-var mainAvatarSpace;
+var avatarSpace;
 var loader;
 var legoBlock;
 
@@ -64,7 +64,7 @@ function init() {
 
 	
 
-	mainAvatarSpace = new AvatarSpace()
+	avatarSpace = new AvatarSpace();
 
     document.body.appendChild(video);
 	video.style.display = 'none';
@@ -114,6 +114,8 @@ function init() {
 
     scene = new THREE.Scene();
 
+	scene.add(avatarSpace.model);
+	
     // Create a camera and a marker root object for your Three.js scene.
     camera = new THREE.Camera();
     scene.add(camera);
@@ -180,7 +182,8 @@ function init() {
 			var r = markers[i];
 			if (r.age > 1) {
 				delete markers[i];
-				scene.remove(r.model);
+				//scene.remove(r.model);
+				avatarSpace.model.visible = false;
 			}
 			r.age++;
 		}
@@ -188,13 +191,15 @@ function init() {
 			m = markers[i];
 			if (!m.model) {
 				//Create Model
-				m.model = mainAvatarSpace.createModel();
-				m.model.matrixAutoUpdate = false;
-				scene.add(m.model);
+				//m.model = mainAvatarSpace.createModel();
+				//m.model.matrixAutoUpdate = false;
+				avatarSpace.model.visible = true;
+				m.model = true;
+				//scene.add(m.model);
 			}
 			copyMatrix(m.transform, tmp);
-			m.model.matrix.setFromArray(tmp);
-			m.model.matrixWorldNeedsUpdate = true;
+			avatarSpace.model.matrix.setFromArray(tmp);
+			avatarSpace.model.matrixWorldNeedsUpdate = true;
 		}
 		renderer.autoClear = false;
 		renderer.clear();
