@@ -1,25 +1,42 @@
 function AvatarSpace(){
 
+	this.createMarker = function(size, color){
+		var material = new THREE.MeshBasicMaterial({ color: color });
+		var radius = size;
+		var segments = 16;
+		var circleGeometry = new THREE.CircleGeometry( radius, segments );
+		var marker = new THREE.Mesh( circleGeometry, material );
+		marker.doubleSided = true;
+		return marker;
+	}
+
+
 	this.createModel = function(){
 		var model = new THREE.Object3D();
+		
+		var testCube = new THREE.Mesh(new THREE.CubeGeometry(50, 50, 50), new THREE.MeshLambertMaterial({
+			color: 'blue',
+			side: THREE.DoubleSide 
+		}));
+		testCube.overdraw = true;
 
-		var testCube = new THREE.Mesh(
-			new THREE.BoxGeometry( 20, 20, 20 ),
-			new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
-		);
+		
 		testCube.position.z = -10;
 		testCube.position.x = 100;
+		testCube.position.y = -200;
+		
 		model.add(testCube);
-			
-		var material = new THREE.MeshBasicMaterial({
-			map: THREE.ImageUtils.loadTexture('./g1.png'),
-			transparent: true,
-			side: THREE.DoubleSide
-		});
+		
+		var directionalLight = new THREE.DirectionalLight(0xffffff);
+		model.add(directionalLight);
 
 		var characterPlaneTest = new THREE.Mesh(
-			new THREE.PlaneGeometry(87.5, 200), material
-			//new THREE.MeshBasicMaterial({color:0x00ffff, side: THREE.DoubleSide})
+			new THREE.PlaneGeometry(87.5, 200),
+			new THREE.MeshBasicMaterial({
+				map: THREE.ImageUtils.loadTexture('./g1.png'),
+				transparent: true,
+				side: THREE.DoubleSide
+			})
 		);
 		characterPlaneTest.position.z = -100;
 		characterPlaneTest.rotation.y = -Math.PI/2;
@@ -44,6 +61,9 @@ function AvatarSpace(){
 		characterDialogPlane.rotation.y = -Math.PI/2;
 		characterDialogPlane.rotation.x = -Math.PI/2;
 		model.add(characterDialogPlane);
+		
+		model.add( legoBlock );
+		
 		return model;
 	}
 	

@@ -18,6 +18,8 @@ var scene;
 var sceneTest;
 var cameraTest;
 var mainAvatarSpace;
+var loader;
+var legoBlock;
 
 var getUserMedia = function(t, onsuccess, onerror) {
   if (navigator.getUserMedia) {
@@ -48,18 +50,19 @@ getUserMedia({'video': true},
     alert("Couldn't access webcam.");
   }
 );
-//----------------------------------------------------------------
-function createMarker(size, color){
-	var material = new THREE.MeshBasicMaterial({ color: color });
-	var radius = size;
-	var segments = 16;
-	var circleGeometry = new THREE.CircleGeometry( radius, segments );
-	var marker = new THREE.Mesh( circleGeometry, material );
-	marker.doubleSided = true;
-	return marker;
-}
-//----------------------------------------------------------------
+
 function init() {
+	loader = new THREE.JSONLoader();
+	loader.load( "models/lego-block.js", function( geometry, materials ) {
+		materials[0].side = THREE.DoubleSide;
+		var material = new THREE.MeshFaceMaterial(materials);
+        legoBlock = new THREE.Mesh(geometry, material);
+        legoBlock.scale.set( 50, 50, 50 );
+        //mesh.position.y = 150;
+        //mesh.position.x = 0;
+    } );
+
+	
 
 	mainAvatarSpace = new AvatarSpace()
 
@@ -110,15 +113,6 @@ function init() {
 	glCanvas.addEventListener( 'mousedown', onDocumentMouseDown, false );
 
     scene = new THREE.Scene();
-    var light = new THREE.PointLight(0xffffff);
-    light.position.set(400, 500, 100);
-    scene.add(light);
-    var light = new THREE.PointLight(0xffffff);
-    light.position.set(-400, -500, -100);
-    scene.add(light);
-	
-	//add origin marker
-    //scene.add(createMarker(25,0x0000ff));
 
     // Create a camera and a marker root object for your Three.js scene.
     camera = new THREE.Camera();
