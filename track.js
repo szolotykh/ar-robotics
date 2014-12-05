@@ -234,6 +234,7 @@ function copyMatrix(mat, cm) {
 
 
 function onDocumentMouseDown( event ){
+	// onClick works even when avatar space is none visible.  << ------- !!!
 	var mouse = { x: 0, y: 0 }
 	var vector = new THREE.Vector3();
 	var raycaster = new THREE.Raycaster();
