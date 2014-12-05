@@ -58,8 +58,6 @@ function init() {
 		var material = new THREE.MeshFaceMaterial(materials);
         legoBlock = new THREE.Mesh(geometry, material);
         legoBlock.scale.set( 50, 50, 50 );
-        //mesh.position.y = 150;
-        //mesh.position.x = 0;
     } );
 
 	
@@ -182,7 +180,7 @@ function init() {
 			var r = markers[i];
 			if (r.age > 1) {
 				delete markers[i];
-				//scene.remove(r.model);
+				// Hide avatar space
 				avatarSpace.model.visible = false;
 			}
 			r.age++;
@@ -190,12 +188,9 @@ function init() {
 		for (var i in markers) {
 			m = markers[i];
 			if (!m.model) {
-				//Create Model
-				//m.model = mainAvatarSpace.createModel();
-				//m.model.matrixAutoUpdate = false;
+				// Show avatar space
 				avatarSpace.model.visible = true;
 				m.model = true;
-				//scene.add(m.model);
 			}
 			copyMatrix(m.transform, tmp);
 			avatarSpace.model.matrix.setFromArray(tmp);
@@ -256,10 +251,6 @@ function onDocumentMouseDown( event ){
     var intersects = raycaster.intersectObjects( scene.children, true );
 
     if ( intersects.length > 0 ) {
-		if(intersects[0].object.name=="avatar-body"){
-			avatarSpace.avatar.setExpression("e2");
-		}else{
-			alert("ok");
-		}
+		avatarSpace.onClick(intersects[0].object);
 	}
 }

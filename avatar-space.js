@@ -51,43 +51,47 @@ function Avatar(){
 	}
 }
 
-function AvatarSpace(){
-
-	this.avatar = new Avatar();
-	this.avatar.setDialog("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.");
-	//this.avatar.setDialog("Hello!");
-
-	this.createMarker = function(size, color){
-		var material = new THREE.MeshBasicMaterial({ color: color });
-		var radius = size;
-		var segments = 16;
-		var circleGeometry = new THREE.CircleGeometry( radius, segments );
-		var marker = new THREE.Mesh( circleGeometry, material );
-		marker.doubleSided = true;
-		return marker;
-	}
-
-	this.model = new THREE.Object3D();
-	this.model.matrixAutoUpdate = false;
-	// Test cube
-	this.testCube = new THREE.Mesh(
-		new THREE.CubeGeometry(50, 50, 50),
+function Marker(size, color){
+	this.model = new THREE.Mesh(
+		new THREE.BoxGeometry(size, size, size),
 		new THREE.MeshLambertMaterial({
-			color: 'blue',
+			color: color,
 			side: THREE.DoubleSide 
 		})
 	);
-	this.testCube.overdraw = true;
-	this.testCube.position.set(100, -200, -10);
-	this.model.add(this.testCube);
-		
+	//this.model.overdraw = true;
+	this.model.position.set(100, -200, -10);
+}
+
+function AvatarSpace(){
+	// Add scene object
+	this.add = function(ob){
+		this.model.add(ob.model);
+		ob.scene = this;
+	}
+	
+	// Init Space
+	this.model = new THREE.Object3D();
+	this.model.matrixAutoUpdate = false;
+
+	this.avatar = new Avatar();
+	this.avatar.setDialog("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.");
+	this.add(this.avatar);
+
+	// Light
 	this.directionalLight = new THREE.DirectionalLight(0xffffff);
 	this.model.add(this.directionalLight);
 
-	// Add avatar model to AvatarSpace
-	this.model.add(this.avatar.model);	
+	this.sensorOne = new Marker(30, "#0000FF");
+	this.add(this.sensorOne);
 	
-	//model.add( legoBlock );
+	this.onClick = function(ob){
+		if(ob.name=="avatar-body"){
+			this.avatar.setExpression("e2");
+		}else{
+			alert("ok");
+		}
+	}
 	
 	this.info = function(){
 		console.log("AvatarSpace");
