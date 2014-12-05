@@ -1,14 +1,30 @@
 function Avatar(){
+	this.textures = {
+		'e1' : THREE.ImageUtils.loadTexture('./img/anime-girl-e1.png'),
+		'e2' : THREE.ImageUtils.loadTexture('./img/anime-girl-e2.png')
+	};
+	this.expression = 'e1';
 	this.model = new THREE.Mesh(
 		new THREE.PlaneGeometry(87.5, 200),
 		new THREE.MeshBasicMaterial({
-			map: THREE.ImageUtils.loadTexture('./g1.png'),
+			map: this.textures['e1'],
 			transparent: true,
 			side: THREE.DoubleSide
 		})
 	);
+	this.model.name = "avatar-body";
 	this.model.position.set(0, 0 , -100);
 	this.model.rotation.set(-Math.PI/2, -Math.PI/2, 0);
+	
+	this.setExpression = function(exp){
+		if(!this.textures.hasOwnProperty(exp)){
+			console.log("Error: Avatar does not have expression '"+ exp +"'");
+			return;
+		}
+		this.expression = exp;
+		this.model.material.map = this.textures[exp];
+		this.model.material.needsUpdate = true;
+	}
 	
 	this.setDialog = function(text){
 	// Add description callous

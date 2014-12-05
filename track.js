@@ -239,11 +239,9 @@ function copyMatrix(mat, cm) {
 
 
 function onDocumentMouseDown( event ){
-
 	var mouse = { x: 0, y: 0 }
 	var vector = new THREE.Vector3();
 	var raycaster = new THREE.Raycaster();
-	//raycaster.precision=0.01;
 	mouse.x = ( (event.clientX - glCanvas.offsetLeft) / 640 ) * 2 - 1;
     mouse.y = - ( (event.clientY - glCanvas.offsetTop) / 480 ) * 2 + 1;
 
@@ -258,6 +256,10 @@ function onDocumentMouseDown( event ){
     var intersects = raycaster.intersectObjects( scene.children, true );
 
     if ( intersects.length > 0 ) {
-        alert("ok");
-    }
+		if(intersects[0].object.name=="avatar-body"){
+			avatarSpace.avatar.setExpression("e2");
+		}else{
+			alert("ok");
+		}
+	}
 }
