@@ -1,29 +1,31 @@
 function Dialog(text){
 
-	this.cCallout = createCanvasDescriptionCallout(text, 200);
-	this.tCallout = new THREE.Texture(this.cCallout);
-	this.tCallout.needsUpdate = true;
+	var cCallout = createCanvasDescriptionCallout(text, 200);
+	var tCallout = new THREE.Texture(cCallout);
+	tCallout.needsUpdate = true;
 	
 	this.model = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.cCallout.width/2, this.cCallout.height/2),
+			new THREE.PlaneGeometry(1,1),
 			new THREE.MeshBasicMaterial({
-				map: this.tCallout,
+				map: tCallout,
 				transparent: true,
 				side: THREE.DoubleSide})
 	);
+	this.model.scale.set(cCallout.width/2, cCallout.height/2, 1);
 	this.model.name = "Avatar dialog";
 	this.model.position.set(100, 60, -10);
-	/*
+	
 	this.setText = function(text){
-		// Add description callous
-		if(this.dialog){
-			this.dialog.geometry.dispose();
-			this.dialog.material.dispose();
-			this.model.remove(this.dialog);
-			this.dialog = undefined;
-		}
+		this.model.material.dispose();
+		var cCallout = createCanvasDescriptionCallout(text, 200);
+		var tCallout = new THREE.Texture(cCallout);
+		tCallout.needsUpdate = true;
+		this.model.material.map = tCallout;
+		this.model.material.needsUpdate = true;
+		this.model.scale.set(cCallout.width/2, cCallout.height/2, 1);
 	}
-	*/
+	
+	
 	
 	// Events
 	this.onClick = function(){}
@@ -58,7 +60,10 @@ function Avatar(){
 	}
 	this.dialog = new Dialog("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.");
 	this.dialog.onClick = function(){
-		alert("Avatar dialog");
+		this.setText("Hello!!!");
+		this.onClick=function(){
+			this.setText("How are you?");
+		}
 	}
 	this.model.add(this.dialog.model);
 	
