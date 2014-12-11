@@ -58,11 +58,11 @@ function Avatar(){
 		this.model.material.map = this.textures[exp];
 		this.model.material.needsUpdate = true;
 	}
-	this.dialog = new Dialog("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.");
+	this.dialog = new Dialog({text: "Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation."});
 	this.dialog.onClick = function(){
-		this.setText("Hello!!!");
+		this.setText({text:"Hello!!!", fontSize:30});
 		this.onClick=function(){
-			this.setText("How are you?");
+			this.setText({text: "How are you?", fontSize:30});
 		}
 	}
 	this.model.add(this.dialog.model);

@@ -1,9 +1,17 @@
-function createCanvasDescriptionCallout(text, maxWidth){
+function createCanvasDescriptionCallout(p){
+	if (p === undefined){
+		p = {};
+	}
+	p.text = p.text||".";
+	p.font = p.font||"Georgia"
+	p.fontSize = p.fontSize||14;
+	p.maxWidth = p.maxWidth||200;
+
 	var x0 = 100;
 	var y0 = 5;
-	var dy = 18;
+	var dy = Math.ceil(p.fontSize*1.25);
 	
-	var words = text.split(' ');
+	var words = p.text.split(' ');
     var line = '';
 	var lines = [];
 	
@@ -12,14 +20,14 @@ function createCanvasDescriptionCallout(text, maxWidth){
 	canvasCallout.width = 30;
     canvasCallout.height = 30;
 	var ctx = canvasCallout.getContext("2d");
-	ctx.font = "14px Georgia";
+	ctx.font = p.fontSize.toString() + "px " + p.font;
 	
 	// Create lines from words
 	var line="";
 	for(var i=0; i<words.length; i++){
 		var tempLine = line + words[i] + ' ';
         var lineMetrics = ctx.measureText(tempLine);
-		if(lineMetrics.width >= maxWidth){
+		if(lineMetrics.width >= p.maxWidth){
 			lines.push(line);
 			line="";
 			i--;
@@ -35,17 +43,21 @@ function createCanvasDescriptionCallout(text, maxWidth){
 	// Calculate new height of canvas
 	var CalloutHeight = lines.length*dy;
 	
+	var CalloutWidth = p.maxWidth;
+	if(lines.length == 1)
+		CalloutWidth = ctx.measureText(lines[0]).width;
+	
 	// Resize canvas
-	canvasCallout.width = x0 + maxWidth + 5;
+	canvasCallout.width = x0 + CalloutWidth + 5;
     canvasCallout.height = y0 + CalloutHeight + 15;
 	ctx = canvasCallout.getContext("2d");
-	ctx.font = "14px Georgia";
+	ctx.font = p.fontSize.toString() + "px " + p.font;
 	
 	// Draw callout body
 	ctx.beginPath();
     ctx.moveTo(x0-10, y0-3);
-    ctx.lineTo(x0 + maxWidth+3, y0-3);
-    ctx.lineTo(x0 + maxWidth+3, y0 + CalloutHeight+12);
+    ctx.lineTo(x0 + CalloutWidth +3, y0-3);
+    ctx.lineTo(x0 + CalloutWidth +3, y0 + CalloutHeight+12);
     ctx.lineTo(x0-10, y0 + CalloutHeight+12);
 	ctx.lineTo(x0-10, y0 + 30);
 	ctx.lineTo(5, y0 + 30);
@@ -63,12 +75,3 @@ function createCanvasDescriptionCallout(text, maxWidth){
 	}
 	return canvasCallout;
 }
-/*
-function init(){
-	console.log("function: init");
-	
-	var cCallout = createCanvasDescriptionCallout("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.", 200);
-	
-	document.body.appendChild(cCallout);
-}
-*/
