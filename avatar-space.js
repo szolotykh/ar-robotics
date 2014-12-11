@@ -85,7 +85,13 @@ function Marker(size, color){
 	this.model.position.set(100, -200, -10);
 	
 	// Events
-	this.onClick = function(){}
+	this.onClick = function(){};
+}
+
+function LegoPart(src){
+	this.model
+	// Events
+	this.onClick = function(){};
 }
 
 function AvatarSpace(){
@@ -106,7 +112,10 @@ function AvatarSpace(){
 	this.avatar = new Avatar();
 	//this.avatar.setDialog("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.");
 	this.avatar.onClick = function(){
-		alert("Avatar");
+		if(this.expression=="e1")
+			this.setExpression("e2");
+		else
+			this.setExpression("e1");
 	}
 	this.add(this.avatar);
 
@@ -119,6 +128,8 @@ function AvatarSpace(){
 		alert("sensorOne");
 	}
 	this.add(this.sensorOne);
+	
+	
 	
 	this.onClick = function(ob){
 

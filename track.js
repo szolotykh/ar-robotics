@@ -52,17 +52,23 @@ getUserMedia({'video': true},
 );
 
 function init() {
-	loader = new THREE.JSONLoader();
-	loader.load( "models/lego-block.js", function( geometry, materials ) {
-		materials[0].side = THREE.DoubleSide;
-		var material = new THREE.MeshFaceMaterial(materials);
-        legoBlock = new THREE.Mesh(geometry, material);
-        legoBlock.scale.set( 50, 50, 50 );
-    } );
-
 	
-
 	avatarSpace = new AvatarSpace();
+	
+	var loader = new THREE.JSONLoader();
+	loader.load( "models/lego-extension.js", function( geometry, materials ) {
+		for(var i=0; i<materials.length; i++)
+			materials[i].side = THREE.DoubleSide;
+		var material = new THREE.MeshFaceMaterial(materials);
+		
+		avatarSpace.legoPart = new LegoPart();
+		avatarSpace.legoPart.model = new THREE.Mesh(geometry, material);
+		avatarSpace.legoPart.model.scale.set( 20, 20, 20 );
+		avatarSpace.legoPart.model.position.set( 200, 0, 0 );
+		avatarSpace.legoPart.model.rotation.set(-Math.PI/2, Math.PI/2, 0);
+		avatarSpace.add(avatarSpace.legoPart);
+	} );
+	
 
     document.body.appendChild(video);
 	video.style.display = 'none';
@@ -101,7 +107,7 @@ function init() {
     var tmp = new Float32Array(16);
 
     var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(640, 480);
+    renderer.setSize(640, 480); // Keep
 
     glCanvas = renderer.domElement;
 	glCanvas.style.position = "static";
@@ -178,7 +184,7 @@ function init() {
 		}
 		for (var i in markers) {
 			var r = markers[i];
-			if (r.age > 1) {
+			if (r.age > 5) {
 				delete markers[i];
 				// Hide avatar space
 				avatarSpace.model.visible = false;
@@ -238,8 +244,8 @@ function onDocumentMouseDown( event ){
 	var mouse = { x: 0, y: 0 }
 	var vector = new THREE.Vector3();
 	var raycaster = new THREE.Raycaster();
-	mouse.x = ( (event.clientX - glCanvas.offsetLeft) / 640 ) * 2 - 1;
-    mouse.y = - ( (event.clientY - glCanvas.offsetTop) / 480 ) * 2 + 1;
+	mouse.x = ( (event.clientX - glCanvas.offsetLeft) / 640 ) * 2 - 1;  //Keep
+    mouse.y = - ( (event.clientY - glCanvas.offsetTop) / 480 ) * 2 + 1; //Keep
 
 	console.log(mouse.x+ " x "+ mouse.y);
 	
