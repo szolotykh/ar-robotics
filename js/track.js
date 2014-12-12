@@ -53,7 +53,11 @@ getUserMedia({'video': true},
 
 function init() {
 	
-	YesNoAlert(function(){ContinueAlert()}, 1);
+	YesNoAlert(
+		function(){
+			ContinueAlert(function(){avatarSpace.showJoystick()})
+		},
+		function(){});
 	
 	avatarSpace = new AvatarSpace();
 	
@@ -68,7 +72,7 @@ function init() {
 		avatarSpace.legoPart.model.scale.set( 20, 20, 20 );
 		avatarSpace.legoPart.model.position.set( 200, 0, 0 );
 		avatarSpace.legoPart.model.rotation.set(-Math.PI/2, Math.PI/2, 0);
-		avatarSpace.add(avatarSpace.legoPart);
+		//avatarSpace.add(avatarSpace.legoPart);
 	} );
 	
 

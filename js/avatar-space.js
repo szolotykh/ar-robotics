@@ -45,7 +45,6 @@ function Avatar(){
 			side: THREE.DoubleSide
 		})
 	);
-	this.model.name = "avatar-body";
 	this.model.position.set(0, 0 , -100);
 	this.model.rotation.set(-Math.PI/2, -Math.PI/2, 0);
 	
@@ -94,6 +93,25 @@ function LegoPart(src){
 	this.onClick = function(){};
 }
 
+function ARArrow(src){
+	var arrowImg = THREE.ImageUtils.loadTexture(src);
+	
+	this.model = new THREE.Mesh(
+		new THREE.PlaneGeometry(350, 269),
+		new THREE.MeshBasicMaterial({
+			map: arrowImg,
+			transparent: true,
+			side: THREE.DoubleSide
+		})
+	);
+	this.model.scale.set(0.5, 0.5, 0.5);
+	this.model.position.set(0, 0 , 0);
+	this.model.rotation.set(0, 0, 0);
+	
+	// Events
+	this.onClick = function(){}
+}
+
 function AvatarSpace(){
 
 	this.objects = [];
@@ -129,6 +147,27 @@ function AvatarSpace(){
 	}
 	this.add(this.sensorOne);
 	
+	
+	this.showJoystick = function(){
+		this.arrowStraight = new ARArrow("img/arrow-straight.png");
+		this.arrowStraight.model.position.set(150,0,-1);
+		this.arrowStraight.model.rotation.set(0,0,0);
+		this.add(this.arrowStraight);
+		
+		
+		this.arrowRight = new ARArrow("img/arrow-right.png");
+		this.arrowRight.model.position.set(80,-120,0);
+		this.arrowRight.model.rotation.set(0,0,-Math.PI/2);
+		this.add(this.arrowRight);
+		
+		this.arrowLeft = new ARArrow("img/arrow-left.png");
+		this.arrowLeft.model.position.set(80,120,0);
+		this.arrowLeft.model.rotation.set(0,0,-Math.PI/2);
+		this.add(this.arrowLeft);
+	}
+	this.hideJojstick = function(){
+	
+	}
 	
 	
 	this.onClick = function(ob){
