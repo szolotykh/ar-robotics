@@ -53,6 +53,8 @@ getUserMedia({'video': true},
 
 function init() {
 	
+	YesNoAlert(function(){ContinueAlert()}, 1);
+	
 	avatarSpace = new AvatarSpace();
 	
 	var loader = new THREE.JSONLoader();

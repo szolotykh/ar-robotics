@@ -1,0 +1,56 @@
+.ui-container{
+	opacity: 0.8;
+	border-style: solid;
+    border-width: 2px;
+	border-color: #AAAAAA;
+	border-radius: 10px;
+	
+	background: #FFFFFF;
+	
+	position: absolute;
+	
+	left: 100px;
+    top: 420px;
+}
+
+.dialog-button{
+	
+	
+	border-style: solid;
+    border-width: 2px;
+	border-radius: 12px;
+	
+	font-family: inherit;
+	text-align: center;
+	font-size: 24px;
+	color: #FFFFFF;
+	
+	display: block;
+	float: left;
+	
+	margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+	
+	width: 200px;
+	height: 30px;
+	
+
+
+}
+/*Yes button (Green)*/
+.db-g{
+	background: rgb(68,157,68);
+	border-color: #4cae4c;
+}
+/*No button (Red)*/
+.db-r{
+	background: rgb(217,83,79);
+	border-color: #ac2925;
+}
+/*Continue button*/
+.db-c{
+	background: rgb(240,173,78);
+	border-color: #eea236;
+}
