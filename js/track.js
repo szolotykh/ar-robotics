@@ -21,6 +21,9 @@ var avatarSpace;
 var loader;
 var legoBlock;
 
+var robotSupport = true;
+var robot;
+
 var getUserMedia = function(t, onsuccess, onerror) {
   if (navigator.getUserMedia) {
     return navigator.getUserMedia(t, onsuccess, onerror);
@@ -58,6 +61,9 @@ function init() {
 			ContinueAlert(function(){avatarSpace.showJoystick()})
 		},
 		function(){});
+		
+	if(robotSupport)
+		robot = new Robot();
 	
 	avatarSpace = new AvatarSpace();
 	
