@@ -1,5 +1,7 @@
 threshold = 128;
 DEBUG = false;
+var resolution = {'width' : 640, 'height':480};
+
 
 var video = document.createElement('video');
 video.width = 640;
@@ -21,7 +23,7 @@ var avatarSpace;
 var loader;
 var legoBlock;
 
-var robotSupport = true;
+var robotSupport = false;
 var robot;
 
 var getUserMedia = function(t, onsuccess, onerror) {
@@ -64,6 +66,8 @@ function init() {
 		
 	if(robotSupport)
 		robot = new Robot();
+	else
+		robot = new VirtualRobot();
 	
 	avatarSpace = new AvatarSpace();
 	
@@ -75,10 +79,10 @@ function init() {
 		
 		avatarSpace.legoPart = new LegoPart();
 		avatarSpace.legoPart.model = new THREE.Mesh(geometry, material);
-		avatarSpace.legoPart.model.scale.set( 20, 20, 20 );
-		avatarSpace.legoPart.model.position.set( 200, 0, 0 );
+		avatarSpace.legoPart.model.scale.set( 25, 25, 25 );
+		avatarSpace.legoPart.model.position.set( 200, 20, 250 );
 		avatarSpace.legoPart.model.rotation.set(-Math.PI/2, Math.PI/2, 0);
-		//avatarSpace.add(avatarSpace.legoPart);
+		avatarSpace.add(avatarSpace.legoPart);
 	} );
 	
 
@@ -86,15 +90,15 @@ function init() {
 	video.style.display = 'none';
 
     var canvas = document.createElement('canvas');
-    canvas.width = 320;
-    canvas.height = 240;
+    canvas.width = resolution.width;
+    canvas.height = resolution.height;
     document.body.appendChild(canvas);
 	canvas.style.display = 'none';
 
     var debugCanvas = document.createElement('canvas');
     debugCanvas.id = 'debugCanvas';
-    debugCanvas.width = 320;
-    debugCanvas.height = 240;
+    debugCanvas.width = resolution.width;
+    debugCanvas.height = resolution.height;
     document.body.appendChild(debugCanvas);
 	debugCanvas.style.display = 'none';
 
@@ -108,11 +112,11 @@ function init() {
 
 
     var raster = new NyARRgbRaster_Canvas2D(canvas);
-    var param = new FLARParam(320,240);
+    var param = new FLARParam(resolution.width,resolution.height);
 
     var resultMat = new NyARTransMatResult();
 
-    var detector = new FLARMultiIdMarkerDetector(param, 120);
+    var detector = new FLARMultiIdMarkerDetector(param, 100);
     detector.setContinueMode(true);
 
 
@@ -168,7 +172,7 @@ function init() {
 		if (video.currentTime == lastTime) return;
 		lastTime = video.currentTime;
 		videoCanvas.getContext('2d').drawImage(video,0,0);
-		ctx.drawImage(videoCanvas, 0,0,320,240);
+		ctx.drawImage(videoCanvas, 0,0,resolution.width,resolution.height);
 		var dt = new Date().getTime();
 
 		canvas.changed = true;
@@ -212,6 +216,8 @@ function init() {
 			}
 			copyMatrix(m.transform, tmp);
 			avatarSpace.model.matrix.setFromArray(tmp);
+			var rotation = new THREE.Matrix4().makeRotationY(Math.PI/4);
+			avatarSpace.model.matrix.multiply(rotation);
 			avatarSpace.model.matrixWorldNeedsUpdate = true;
 		}
 		renderer.autoClear = false;
@@ -259,7 +265,7 @@ function onDocumentMouseDown( event ){
 	mouse.x = ( (event.clientX - glCanvas.offsetLeft) / 640 ) * 2 - 1;  //Keep
     mouse.y = - ( (event.clientY - glCanvas.offsetTop) / 480 ) * 2 + 1; //Keep
 
-	console.log(mouse.x+ " x "+ mouse.y);
+	//console.log(mouse.x+ " x "+ mouse.y);
 	
     vector.set( mouse.x, mouse.y, -0.5 );
     vector.unproject( camera );

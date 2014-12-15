@@ -152,41 +152,35 @@ function AvatarSpace(){
 		this.arrowStraight = new ARArrow("img/arrow-straight.png");
 		this.arrowStraight.model.position.set(150,0,-1);
 		this.arrowStraight.model.rotation.set(0,0,0);
-		if(robotSupport){
-			this.arrowStraight.onClick = function(){
-				robot.forward();
-				setTimeout(function(){robot.stop()}, 300);
-			}
-		}else{
-			console.log("Move forward")
+
+		this.arrowStraight.onClick = function(){
+			robot.forward();
+			setTimeout(function(){robot.stop()}, 300);
 		}
+
 		this.add(this.arrowStraight);
 		
 		
 		this.arrowRight = new ARArrow("img/arrow-right.png");
 		this.arrowRight.model.position.set(80,-120,0);
 		this.arrowRight.model.rotation.set(0,0,-Math.PI/2);
-		if(robotSupport){
-			this.arrowRight.onClick = function(){
-				robot.right();
-				setTimeout(function(){robot.stop()}, 300);
-			}
-		}else{
-			console.log("Move right")
+
+		this.arrowRight.onClick = function(){
+			robot.right();
+			setTimeout(function(){robot.stop()}, 300);
 		}
+
 		this.add(this.arrowRight);
 		
 		this.arrowLeft = new ARArrow("img/arrow-left.png");
 		this.arrowLeft.model.position.set(80,120,0);
 		this.arrowLeft.model.rotation.set(0,0,-Math.PI/2);
-		if(robotSupport){
-			this.arrowLeft.onClick = function(){
-				robot.left();
-				setTimeout(function(){robot.stop()}, 300);
-			}
-		}else{
-			console.log("Move left")
+
+		this.arrowLeft.onClick = function(){
+			robot.left();
+			setTimeout(function(){robot.stop()}, 300);
 		}
+
 		this.add(this.arrowLeft);
 	}
 	this.hideJojstick = function(){

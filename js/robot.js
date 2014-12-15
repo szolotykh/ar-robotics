@@ -44,3 +44,32 @@ function Robot(){
 		this.ws.send("tone");
 	}
 }
+
+function VirtualRobot(){
+	// Move
+	this.forward = function(){
+		console.log("forward");
+	}
+	this.stop = function(){
+		console.log("stop");
+	}
+	this.left = function(){
+		console.log("left");
+	}
+	this.right = function(){
+		console.log("right");
+	}
+	
+	// Sensors
+	this.getTouch = function(){
+		console.log("touch");
+	}
+	this.getLight = function(){
+		console.log("light");
+	}
+	
+	//Tone
+	this.playTone = function(){
+		console.log("tone");
+	}
+}
