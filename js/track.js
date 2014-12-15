@@ -56,18 +56,41 @@ getUserMedia({'video': true},
   }
 );
 
+//---------------------------- Init --------------------------------------
 function init() {
 	
 	YesNoAlert(
 		function(){
-			ContinueAlert(function(){avatarSpace.showJoystick()})
+			avatarSpace.showJoystick();
+			ContinueAlert(function(){
+				avatarSpace.hideJojstick();
+			})
 		},
-		function(){});
+		function(){
+			avatarSpace.showTouchSensor();
+			ContinueAlert(function(){
+				avatarSpace.hideTouchSensor();
+			});
+		});
 		
-	if(robotSupport)
+	if(robotSupport){
 		robot = new Robot();
-	else
+		robot.ws.onmessage = function (evt){ 
+			var msg = evt.data;
+			var jMsg = JSON.parse(msg);
+			//console.log("ws.onmessage: " + jMsg.type + " = " + jMsg.value);
+			if(jMsg.type == "touch"){
+				var adc = parseInt(jMsg.value)
+				if(adc>512){
+					avatarSpace.updateTouchSensor("OFF");
+				}else{
+					avatarSpace.updateTouchSensor("ON");
+				}
+			}
+		}
+	}else{
 		robot = new VirtualRobot();
+	}
 	
 	avatarSpace = new AvatarSpace();
 	

@@ -1,5 +1,5 @@
 function createCanvasDescriptionCallout(p){
-	if (p === undefined){
+	if (p == undefined){
 		p = {};
 	}
 	p.text = p.text||".";

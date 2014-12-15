@@ -122,6 +122,11 @@ function AvatarSpace(){
 		this.objects.push(ob);
 		ob.scene = this;	
 	}
+	this.remove = function(ob){
+		this.model.remove(ob.model);
+		this.objects.splice(this.objects.indexOf(ob), 1);
+		ob.scene = null;
+	}
 	
 	// Init Space
 	this.model = new THREE.Object3D();
@@ -147,44 +152,59 @@ function AvatarSpace(){
 	}
 	this.add(this.sensorOne);
 	
+	// Joystick
+	this.arrowStraight = new ARArrow("img/arrow-straight.png");
+	this.arrowStraight.model.position.set(150,0,-1);
+	this.arrowStraight.model.rotation.set(0,0,0);
+	this.arrowStraight.onClick = function(){
+		robot.forward();
+		setTimeout(function(){robot.stop()}, 300);
+	}
 	
+	this.arrowRight = new ARArrow("img/arrow-right.png");
+	this.arrowRight.model.position.set(80,-120,0);
+	this.arrowRight.model.rotation.set(0,0,-Math.PI/2);
+	this.arrowRight.onClick = function(){
+		robot.right();
+		setTimeout(function(){robot.stop()}, 300);
+	}
+	
+	this.arrowLeft = new ARArrow("img/arrow-left.png");
+	this.arrowLeft.model.position.set(80,120,0);
+	this.arrowLeft.model.rotation.set(0,0,-Math.PI/2);
+	this.arrowLeft.onClick = function(){
+		robot.left();
+		setTimeout(function(){robot.stop()}, 300);
+	}
+		
 	this.showJoystick = function(){
-		this.arrowStraight = new ARArrow("img/arrow-straight.png");
-		this.arrowStraight.model.position.set(150,0,-1);
-		this.arrowStraight.model.rotation.set(0,0,0);
-
-		this.arrowStraight.onClick = function(){
-			robot.forward();
-			setTimeout(function(){robot.stop()}, 300);
-		}
-
 		this.add(this.arrowStraight);
-		
-		
-		this.arrowRight = new ARArrow("img/arrow-right.png");
-		this.arrowRight.model.position.set(80,-120,0);
-		this.arrowRight.model.rotation.set(0,0,-Math.PI/2);
-
-		this.arrowRight.onClick = function(){
-			robot.right();
-			setTimeout(function(){robot.stop()}, 300);
-		}
-
 		this.add(this.arrowRight);
-		
-		this.arrowLeft = new ARArrow("img/arrow-left.png");
-		this.arrowLeft.model.position.set(80,120,0);
-		this.arrowLeft.model.rotation.set(0,0,-Math.PI/2);
-
-		this.arrowLeft.onClick = function(){
-			robot.left();
-			setTimeout(function(){robot.stop()}, 300);
-		}
-
 		this.add(this.arrowLeft);
 	}
 	this.hideJojstick = function(){
+		this.remove(this.arrowStraight);
+		this.remove(this.arrowRight);
+		this.remove(this.arrowLeft);
+	}
 	
+	//Touch sensor
+	this.touchSensorDialog = new Dialog({text:"OFF", fontSize:40});
+	this.touchSensorDialog.model.position.set(-220,-80,-250);
+	this.touchSensorDialog.model.rotation.set(-Math.PI/2, -Math.PI/2, 0);
+	
+	this.showTouchSensor = function(){
+		this.add(this.touchSensorDialog);
+		this.touchSensorInterval = setInterval(function(){
+			robot.getTouch();
+		}, 200);
+	}
+	this.updateTouchSensor = function(val){
+		this.touchSensorDialog.setText({text:val, fontSize:40});
+	}
+	this.hideTouchSensor = function(){
+		clearInterval(this.touchSensorInterval);
+		this.remove(this.touchSensorDialog);
 	}
 	
 	

@@ -1,12 +1,10 @@
 function Robot(){
     this.ws = new WebSocket("ws://localhost:8001");
+	this.ws.p = this;
     this.ws.onopen = function(){ 
 		console.log("ws.onopen");
     }
     this.ws.onmessage = function (evt){ 
-        var msg = evt.data;
-		var jMsg = JSON.parse(msg);
-		console.log("ws.onmessage: " + jMsg.type + " = " + jMsg.value);
 
     }
 	this.ws.onerror = function(){
