@@ -2,7 +2,6 @@ threshold = 128;
 DEBUG = false;
 var resolution = {'width' : 640, 'height':480};
 
-
 var video = document.createElement('video');
 video.width = 640;
 video.height = 480;
@@ -23,7 +22,10 @@ var avatarSpace;
 var loader;
 var legoBlock;
 
-var robotSupport = false;
+renderWidth = window.innerHeight*1.33*0.97;
+renderHeight = window.innerHeight*0.97;
+
+var robotSupport = true;
 var robot;
 
 var getUserMedia = function(t, onsuccess, onerror) {
@@ -58,21 +60,6 @@ getUserMedia({'video': true},
 
 //---------------------------- Init --------------------------------------
 function init() {
-	
-	YesNoAlert(
-		function(){
-			avatarSpace.showJoystick();
-			ContinueAlert(function(){
-				avatarSpace.hideJojstick();
-			})
-		},
-		function(){
-			avatarSpace.showTouchSensor();
-			ContinueAlert(function(){
-				avatarSpace.hideTouchSensor();
-			});
-		});
-		
 	if(robotSupport){
 		robot = new Robot();
 		robot.ws.onmessage = function (evt){ 
@@ -86,6 +73,11 @@ function init() {
 				}else{
 					avatarSpace.updateTouchSensor("ON");
 				}
+				return;
+			}
+			if(jMsg.type == "light"){
+				avatarSpace.updateLightSensor("ADC: " + jMsg.value);
+				return;
 			}
 		}
 	}else{
@@ -93,6 +85,9 @@ function init() {
 	}
 	
 	avatarSpace = new AvatarSpace();
+	avatarSpace.avatar.onClick = function(){
+		robot.playTone();
+	}
 	
 	var loader = new THREE.JSONLoader();
 	loader.load( "models/lego-extension.js", function( geometry, materials ) {
@@ -105,7 +100,6 @@ function init() {
 		avatarSpace.legoPart.model.scale.set( 25, 25, 25 );
 		avatarSpace.legoPart.model.position.set( 200, 20, 250 );
 		avatarSpace.legoPart.model.rotation.set(-Math.PI/2, Math.PI/2, 0);
-		avatarSpace.add(avatarSpace.legoPart);
 	} );
 	
 
@@ -146,7 +140,7 @@ function init() {
     var tmp = new Float32Array(16);
 
     var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(640, 480); // Keep
+    renderer.setSize(renderWidth, renderHeight); // Keep
 
     glCanvas = renderer.domElement;
 	glCanvas.style.position = "static";
@@ -239,6 +233,15 @@ function init() {
 			}
 			copyMatrix(m.transform, tmp);
 			avatarSpace.model.matrix.setFromArray(tmp);
+			
+			/* Matrix decomposition
+			var mt = new THREE.Vector3();
+			var ms = new THREE.Vector3();
+			var mr = new THREE.Quaternion();
+			avatarSpace.model.matrix.decompose(mt,mr,ms);
+			console.log(mr);
+			*/
+			
 			var rotation = new THREE.Matrix4().makeRotationY(Math.PI/4);
 			avatarSpace.model.matrix.multiply(rotation);
 			avatarSpace.model.matrixWorldNeedsUpdate = true;
@@ -285,8 +288,8 @@ function onDocumentMouseDown( event ){
 	var mouse = { x: 0, y: 0 }
 	var vector = new THREE.Vector3();
 	var raycaster = new THREE.Raycaster();
-	mouse.x = ( (event.clientX - glCanvas.offsetLeft) / 640 ) * 2 - 1;  //Keep
-    mouse.y = - ( (event.clientY - glCanvas.offsetTop) / 480 ) * 2 + 1; //Keep
+	mouse.x = ( (event.clientX - glCanvas.offsetLeft) / renderWidth ) * 2 - 1;  //Keep
+    mouse.y = - ( (event.clientY - glCanvas.offsetTop) / renderHeight ) * 2 + 1; //Keep
 
 	//console.log(mouse.x+ " x "+ mouse.y);
 	

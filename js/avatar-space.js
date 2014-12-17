@@ -12,8 +12,7 @@ function Dialog(text){
 				side: THREE.DoubleSide})
 	);
 	this.model.scale.set(cCallout.width/2, cCallout.height/2, 1);
-	this.model.name = "Avatar dialog";
-	this.model.position.set(100, 60, -10);
+	this.model.position.set(120, 70, -10);
 	
 	this.setText = function(text){
 		this.model.material.dispose();
@@ -34,13 +33,14 @@ function Dialog(text){
 function Avatar(){
 	this.textures = {
 		'e1' : THREE.ImageUtils.loadTexture('./img/anime-girl-e1.png'),
-		'e2' : THREE.ImageUtils.loadTexture('./img/anime-girl-e2.png')
+		'e2' : THREE.ImageUtils.loadTexture('./img/anime-girl-e2.png'),
+		'e3' : THREE.ImageUtils.loadTexture('./img/anime-girl-e3.png')
 	};
-	this.expression = 'e1';
+	this.expression = 'e3';
 	this.model = new THREE.Mesh(
 		new THREE.PlaneGeometry(87.5, 200),
 		new THREE.MeshBasicMaterial({
-			map: this.textures['e1'],
+			map: this.textures[this.expression],
 			transparent: true,
 			side: THREE.DoubleSide
 		})
@@ -57,13 +57,13 @@ function Avatar(){
 		this.model.material.map = this.textures[exp];
 		this.model.material.needsUpdate = true;
 	}
-	this.dialog = new Dialog({text: "Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation."});
+	// ------------------- Dialog -------------------------------
+	this.dialog = new Dialog({text: "Hello!!!", fontSize:40});
+	
 	this.dialog.onClick = function(){
-		this.setText({text:"Hello!!!", fontSize:30});
-		this.onClick=function(){
-			this.setText({text: "How are you?", fontSize:30});
-		}
+		scenario();
 	}
+	
 	this.model.add(this.dialog.model);
 	
 	this.children = [this.dialog];
@@ -86,13 +86,13 @@ function Marker(size, color){
 	// Events
 	this.onClick = function(){};
 }
-
+// ---------------------------------- LegoPart --------------------------------
 function LegoPart(src){
 	this.model
 	// Events
 	this.onClick = function(){};
 }
-
+// ---------------------------------- ARArrow ----------------------------------
 function ARArrow(src){
 	var arrowImg = THREE.ImageUtils.loadTexture(src);
 	
@@ -133,48 +133,53 @@ function AvatarSpace(){
 	this.model.matrixAutoUpdate = false;
 
 	this.avatar = new Avatar();
-	//this.avatar.setDialog("Anime are Japanese animated productions usually featuring hand-drawn or computer animation. The word is the abbreviated pronunciation of animation in Japanese, where this term references all animation.");
+	/*
 	this.avatar.onClick = function(){
 		if(this.expression=="e1")
 			this.setExpression("e2");
 		else
 			this.setExpression("e1");
 	}
+	*/
+	
 	this.add(this.avatar);
+	this.dialog = this.avatar.dialog;
 
-	// Light
+	// ----------------------------- Light ---------------------------------------
 	this.directionalLight = new THREE.DirectionalLight(0xffffff);
 	this.model.add(this.directionalLight);
-
+	// -------------------------- Marker (Example) -------------------------------
+	/* 
 	this.sensorOne = new Marker(30, "#0000FF");
 	this.sensorOne.onClick = function(){
 		alert("sensorOne");
 	}
 	this.add(this.sensorOne);
+	*/
 	
-	// Joystick
+	// ----------------------------- Joystick -----------------------------------
 	this.arrowStraight = new ARArrow("img/arrow-straight.png");
 	this.arrowStraight.model.position.set(150,0,-1);
 	this.arrowStraight.model.rotation.set(0,0,0);
 	this.arrowStraight.onClick = function(){
 		robot.forward();
-		setTimeout(function(){robot.stop()}, 300);
+		setTimeout(function(){robot.stop()}, 500);
 	}
 	
 	this.arrowRight = new ARArrow("img/arrow-right.png");
 	this.arrowRight.model.position.set(80,-120,0);
 	this.arrowRight.model.rotation.set(0,0,-Math.PI/2);
 	this.arrowRight.onClick = function(){
-		robot.right();
-		setTimeout(function(){robot.stop()}, 300);
+		robot.left();
+		setTimeout(function(){robot.stop()}, 500);
 	}
 	
 	this.arrowLeft = new ARArrow("img/arrow-left.png");
 	this.arrowLeft.model.position.set(80,120,0);
 	this.arrowLeft.model.rotation.set(0,0,-Math.PI/2);
 	this.arrowLeft.onClick = function(){
-		robot.left();
-		setTimeout(function(){robot.stop()}, 300);
+		robot.right();
+		setTimeout(function(){robot.stop()}, 500);
 	}
 		
 	this.showJoystick = function(){
@@ -182,13 +187,13 @@ function AvatarSpace(){
 		this.add(this.arrowRight);
 		this.add(this.arrowLeft);
 	}
-	this.hideJojstick = function(){
+	this.hideJoystick = function(){
 		this.remove(this.arrowStraight);
 		this.remove(this.arrowRight);
 		this.remove(this.arrowLeft);
 	}
 	
-	//Touch sensor
+	// ----------------------------- Touch sensor ------------------------------------------
 	this.touchSensorDialog = new Dialog({text:"OFF", fontSize:40});
 	this.touchSensorDialog.model.position.set(-220,-80,-250);
 	this.touchSensorDialog.model.rotation.set(-Math.PI/2, -Math.PI/2, 0);
@@ -206,8 +211,34 @@ function AvatarSpace(){
 		clearInterval(this.touchSensorInterval);
 		this.remove(this.touchSensorDialog);
 	}
+	// ----------------------------- Light sensor ------------------------------------------
+	this.lightSensorDialog = new Dialog({text:"ADC: 0", fontSize:40});
+	this.lightSensorDialog.model.position.set(-220,200,-250);
+	this.lightSensorDialog.model.rotation.set(-Math.PI/2, -Math.PI/2, 0);
 	
+	this.showLightSensor = function(){
+		this.add(this.lightSensorDialog);
+		this.lightSensorInterval = setInterval(function(){
+			robot.getLight();
+		}, 200);
+	}
+	this.updateLightSensor = function(val){
+		this.lightSensorDialog.setText({text:val, fontSize:40});
+	}
+	this.hideLightSensor = function(){
+		clearInterval(this.lightSensorInterval);
+		this.remove(this.lightSensorDialog);
+	}
 	
+	// Lego Part
+	this.showLegoExtension = function(){
+		this.add(this.legoPart);
+	}
+	this.hideLegoExtension = function(){
+		this.remove(this.legoPart);
+	}
+	
+	// ----------------------------- Event onClick -----------------------------------------
 	this.onClick = function(ob){
 
 		for(var i=0; i<this.objects.length; i++){
@@ -225,14 +256,6 @@ function AvatarSpace(){
 				}
 			}
 		}
-		
-		/*
-		if(ob.name=="avatar-body"){
-			this.avatar.setExpression("e2");
-		}else{
-			alert("ok");
-		}
-		*/
 	}
 	
 	this.info = function(){

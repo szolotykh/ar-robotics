@@ -5,7 +5,7 @@ function createCanvasDescriptionCallout(p){
 	p.text = p.text||".";
 	p.font = p.font||"Georgia"
 	p.fontSize = p.fontSize||14;
-	p.maxWidth = p.maxWidth||200;
+	p.maxWidth = p.maxWidth||300;
 
 	var x0 = 100;
 	var y0 = 5;

@@ -1,5 +1,5 @@
 function Robot(){
-    this.ws = new WebSocket("ws://localhost:8001");
+    this.ws = new WebSocket("ws://"+window.location.hostname+":8001");
 	this.ws.p = this;
     this.ws.onopen = function(){ 
 		console.log("ws.onopen");
