@@ -32,8 +32,6 @@ function Dialog(text){
 
 function Avatar(){
 	this.textures = {
-		'e1' : THREE.ImageUtils.loadTexture('./img/anime-girl-e1.png'),
-		'e2' : THREE.ImageUtils.loadTexture('./img/anime-girl-e2.png'),
 		'e3' : THREE.ImageUtils.loadTexture('./img/anime-girl-e3.png')
 	};
 	this.expression = 'e3';

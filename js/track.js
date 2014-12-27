@@ -25,7 +25,7 @@ var legoBlock;
 renderWidth = window.innerHeight*1.33*0.97;
 renderHeight = window.innerHeight*0.97;
 
-var robotSupport = true;
+var robotSupport = false;
 var robot;
 
 var getUserMedia = function(t, onsuccess, onerror) {
