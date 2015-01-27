@@ -23,11 +23,6 @@ function Dialog(text){
 		this.model.material.needsUpdate = true;
 		this.model.scale.set(cCallout.width/2, cCallout.height/2, 1);
 	}
-	
-	
-	
-	// Events
-	this.onClick = function(){}
 }
 
 function Avatar(){
@@ -65,9 +60,6 @@ function Avatar(){
 	this.model.add(this.dialog.model);
 	
 	this.children = [this.dialog];
-
-	// Events
-	this.onClick = function(){}
 }
 
 function Marker(size, color){
@@ -80,15 +72,26 @@ function Marker(size, color){
 	);
 	//this.model.overdraw = true;
 	this.model.position.set(100, -200, -10);
-	
-	// Events
-	this.onClick = function(){};
 }
 // ---------------------------------- LegoPart --------------------------------
 function LegoPart(src){
-	this.model
-	// Events
-	this.onClick = function(){};
+	var scope = this;
+	
+	this.load = function(){
+		var loader = new THREE.JSONLoader();
+		loader.load(src , function( geometry, materials ) {
+			for(var i=0; i<materials.length; i++)
+				materials[i].side = THREE.DoubleSide;
+			var material = new THREE.MeshFaceMaterial(materials);
+			
+			scope.model = new THREE.Mesh(geometry, material);
+			scope.model.scale.set( 25, 25, 25 );
+			scope.model.position.set( 200, 20, 250 );
+			scope.model.rotation.set(-Math.PI/2, Math.PI/2, 0);
+			if(scope.onLoad !== undefined)
+				scope.onLoad();
+		} );
+	}
 }
 // ---------------------------------- ARArrow ----------------------------------
 function ARArrow(src){
@@ -105,13 +108,9 @@ function ARArrow(src){
 	this.model.scale.set(0.5, 0.5, 0.5);
 	this.model.position.set(0, 0 , 0);
 	this.model.rotation.set(0, 0, 0);
-	
-	// Events
-	this.onClick = function(){}
 }
 
 function AvatarSpace(){
-
 	this.objects = [];
 
 	// Add scene object
@@ -242,21 +241,19 @@ function AvatarSpace(){
 		for(var i=0; i<this.objects.length; i++){
 			var cOb = this.objects[i]
 			if(ob == cOb.model){
-				this.objects[i].onClick();
+				if(this.objects[i].onClick !== undefined)
+					this.objects[i].onClick();
 				break;
 			}
 			if(cOb.hasOwnProperty('children')){
 				for(var j=0; j<cOb.children.length; j++){
 					if(ob == cOb.children[j].model){
-						cOb.children[j].onClick();
+						if(cOb.children[j].onClick !== undefined)
+							cOb.children[j].onClick();
 						break;
 					}
 				}
 			}
 		}
-	}
-	
-	this.info = function(){
-		console.log("AvatarSpace");
 	}
 }

@@ -64,18 +64,11 @@ function initTrack() {
 		robot.playTone();
 	}
 	
-	var loader = new THREE.JSONLoader();
-	loader.load( "models/lego-extension.js", function( geometry, materials ) {
-		for(var i=0; i<materials.length; i++)
-			materials[i].side = THREE.DoubleSide;
-		var material = new THREE.MeshFaceMaterial(materials);
-		
-		avatarSpace.legoPart = new LegoPart();
-		avatarSpace.legoPart.model = new THREE.Mesh(geometry, material);
-		avatarSpace.legoPart.model.scale.set( 25, 25, 25 );
-		avatarSpace.legoPart.model.position.set( 200, 20, 250 );
-		avatarSpace.legoPart.model.rotation.set(-Math.PI/2, Math.PI/2, 0);
-	} );
+	avatarSpace.legoPart =  new LegoPart("models/lego-extension.js");
+	avatarSpace.legoPart.onLoad = function(){
+		console.log("Lego part loaded.");
+	}
+	avatarSpace.legoPart.load();
 	
 
     document.body.appendChild(video);
